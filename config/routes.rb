@@ -9,6 +9,7 @@ Rails.application.routes.draw do
             resources :users
             resources :sessions
             resources :gains
+            resources :expenses
         end
     end    
 end
