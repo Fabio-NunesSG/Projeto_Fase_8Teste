@@ -8,16 +8,35 @@ RSpec.describe 'Gains API' do
     
     describe "GET /gains" do
         
-        before do
-            create_list(:gain, 5, user_id: user.id)
-            get "/gains", params: {}, headers: headers
+        context 'when no filter param is sent' do            
+            before do
+                create_list(:gain, 5, user_id: user.id)
+                get "/gains", params: {}, headers: headers
+            end
+
+            it "returns status code 200" do
+                expect(response).to have_http_status(200)
+            end
+            it "returns 5 gains from database" do
+                expect(json_body["data"].count).to eq(5)
+            end            
         end
         
-        it "returns status code 200" do
-            expect(response).to have_http_status(200)
-        end
-        it "returns 5 gains from database" do
-            expect(json_body["data"].count).to eq(5)
+        context 'when filter param is sent' do
+            let!(:salario_gain_1) { create(:gain, description: 'salario do mes', user_id: user.id) }
+            let!(:salario_gain_2) { create(:gain, description: 'o salario do outro mes', user_id: user.id) }
+            let!(:outra_gain_1) { create(:gain, description: 'mesada da semana', user_id: user.id) }
+            let!(:outra_gain_2) { create(:gain, description: 'vendas do mes', user_id: user.id) }
+            
+            before do
+                get '/gains?q[description_cont]=sala&q[s]=description+ASC', params: {}, headers: headers
+            end
+        
+            it 'returns only the gains matching' do
+                returned_gain_descriptions = json_body['data'].map { |t| t['attributes']['description'] }
+                
+                expect(returned_gain_descriptions).to eq([salario_gain_2.description, salario_gain_1.description])
+            end        
         end
         
     end
