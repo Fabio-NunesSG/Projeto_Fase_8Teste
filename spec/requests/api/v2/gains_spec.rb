@@ -2,7 +2,15 @@ require 'rails_helper'
 
 RSpec.describe 'Gains API' do
     let!(:user) { create(:user) }
-    let(:headers) { { "Accept" => "application/vnd.projetofase8.v2", "Authorization" => user.auth_token } }
+    let!(:auth_data) { user.create_new_auth_token }
+    let(:headers) do
+        { 
+            "Accept" => "application/vnd.projetofase8.v2", 
+            "access-token" => auth_data['access-token'],
+            "uid" => auth_data['uid'],
+            "client" => auth_data['client']
+        } 
+    end
     
     before { host! "localhost:3000/api" }
     

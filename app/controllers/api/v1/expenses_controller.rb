@@ -1,4 +1,4 @@
-class Api::V1::ExpensesController < ApplicationController
+class Api::V1::ExpensesController < Api::V1::BaseController
     
     before_action :authenticate_with_token!
     
